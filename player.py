@@ -2,7 +2,7 @@ import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED
 class Player(CircleShape):
-    def __init__(self, x, y, radius):
+    def __init__(self, x: float, y: float, radius: float) -> None:
         super().__init__(x, y, radius)
         self.x = x
         self.y = y
@@ -21,10 +21,10 @@ class Player(CircleShape):
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
 
-    def rotate(self, dt):
+    def rotate(self, dt: float):
         self.rotation += PLAYER_TURN_SPEED * dt
 
-    def move(self, dt):
+    def move(self, dt: float):
         unit_vector = pygame.Vector2(0,1)
         rotated_vector = unit_vector.rotate(self.rotation)
         rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt
