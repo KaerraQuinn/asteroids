@@ -1,7 +1,9 @@
 import pygame
+import time
 from circleshape import CircleShape
 from shot import Shot
 from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, SHOT_RADIUS, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN_SECONDS
+immunity_end = pygame.USEREVENT + 0
 class Player(CircleShape):
     def __init__(self, x: float, y: float, radius: float) -> None:
         super().__init__(x, y, radius)
@@ -9,8 +11,8 @@ class Player(CircleShape):
         self.y = y
         self.radius = PLAYER_RADIUS
         self.rotation = 0
+        self.immune = False
 
-    # in the Player class
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
@@ -40,6 +42,10 @@ class Player(CircleShape):
             self.shot_cooldown_timer = PLAYER_SHOOT_COOLDOWN_SECONDS
         bullet = Shot(self.position.x, self.position.y)
         bullet.velocity =  pygame.Vector2(0,1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+
+    def set_immune(self):
+        self.immune = True
+        pygame.time.set_timer(immunity_end, 10000, 3)
 
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
