@@ -24,6 +24,8 @@ def main():
     Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
     Shot.containers = (shots, drawable, updatable)
+    Score = 0
+    Lives = 3
     while True:
         log_state()
         for event in pygame.event.get():
@@ -40,11 +42,17 @@ def main():
                     log_event("asteroid_shot")
                     shot.kill()
                     asteroid.split()
+                    log_event("Score")
+                    Score += 10
             collision = asteroid.collides_with(player)
             if collision:
-                log_event("player_hit")
-                print (f"Game Over!")
-                sys.exit()
+                if Lives <= 0:
+                    log_event("player_hit")
+                    print (f"Game Over!")
+                    print (f"SCORE:{Score}")
+                    sys.exit()
+                else:
+                    Lives -= 1
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
