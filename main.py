@@ -27,12 +27,12 @@ def main():
     Shot.containers = (shots, drawable, updatable)
     Score = 0
     Lives = 3
-    immunity_end = pygame.USEREVENT + 0
+    IMMUNITY_END = pygame.USEREVENT + 1
     while True:
         log_state()
+        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
-            keys = pygame.key.get_pressed()
-            if event.type == immunity_end:
+            if event.type == IMMUNITY_END:
                 player.immune = False
             if event.type == pygame.QUIT:
                 return
@@ -54,18 +54,17 @@ def main():
                     Score += 10
             collision = asteroid.collides_with(player)
             if collision:
-                if player.immune:
-                    log_event("inv_hit")
-                    print (f"immune")
-                if Lives <= 0:
-                    log_event("player_hit")
-                    print (f"Game Over!")
-                    print (f"SCORE:{Score}")
-                    sys.exit()
-                else:
-                    log_event("player_hit")
-                    Lives -= 1
-                    player.set_immune()
+                if player.immune is False:
+                    if Lives <= 0:
+                        log_event("player_hit")
+                        print (f"Game Over!")
+                        print (f"SCORE:{Score}")
+                        sys.exit()
+                    else:
+                        log_event("player_hit")
+                        Lives -= 1
+                        player.immune = True
+                        pygame.time.set_timer(IMMUNITY_END, 500)
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
