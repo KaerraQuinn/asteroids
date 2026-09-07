@@ -6,7 +6,9 @@ from logger import log_state, log_event
 from asteroid import Asteroid
 from player import Player
 from asteroidfield import AsteroidField
+from powerupfield import PowerUpField
 from shot import Shot
+from extralife import ExtraLife
 
 def main():
     pygame.init()
@@ -19,12 +21,16 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    extralives = pygame.sprite.Group()
+    PowerUpField.containers = (updatable)
     AsteroidField.containers = (updatable)
     asteroid_field = AsteroidField()
+    power_up_field = PowerUpField()
     Asteroid.containers = (updatable, drawable, asteroids)
     Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
     Shot.containers = (shots, drawable, updatable)
+    ExtraLife.containers = (updatable, drawable, extralives)
     Score = 0
     Lives = 3
     IMMUNITY_END = pygame.USEREVENT + 1
@@ -65,6 +71,12 @@ def main():
                         Lives -= 1
                         player.immune = True
                         pygame.time.set_timer(IMMUNITY_END, 500)
+        for extralife in extralives:
+            collision = extralife.collides_with(player)
+            if collision:
+                log_event("extra_life")
+                Lives += 1
+                extralife.kill()
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
