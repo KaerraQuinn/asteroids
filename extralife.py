@@ -1,5 +1,4 @@
 import pygame
-import random
 from logger import log_event
 from powerup import PowerUp
 from constants import LINE_WIDTH

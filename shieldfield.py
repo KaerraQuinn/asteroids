@@ -3,14 +3,13 @@ from collections.abc import Callable
 
 import pygame
 import random
-from extralife import ExtraLife
 from shield import Shield
 from constants import *
 
 Edge = tuple[pygame.Vector2, Callable[[float], pygame.Vector2]]
 
 
-class PowerUpField(pygame.sprite.Sprite):
+class ShieldField(pygame.sprite.Sprite):
     containers: pygame.sprite.Group
 
     edges: list[Edge] = [
@@ -40,19 +39,11 @@ class PowerUpField(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.spawn_timer = 0.0
 
-    def spawn_extralife(
-        self, radius: float, position: pygame.Vector2, velocity: pygame.Vector2
-    ) -> None:
-        extralife = ExtraLife(position.x, position.y, radius)
-        extralife.velocity = velocity
-
-    def spawn_shield(
+    def spawn(
         self, radius: float, position: pygame.Vector2, velocity: pygame.Vector2
     ) -> None:
         shield = Shield(position.x, position.y, radius)
         shield.velocity = velocity
-
-    powerups = [spawn_extralife, spawn_shield]
 
     def update(self, dt: float) -> None:
         self.spawn_timer += dt
@@ -65,5 +56,4 @@ class PowerUpField(pygame.sprite.Sprite):
             velocity = edge[0] * speed
             velocity = velocity.rotate(random.randint(-30, 30))
             position = edge[1](random.uniform(0, 1))
-            spawn_choice = random.choice(self.powerups)(self, ASTEROID_MIN_RADIUS, position, velocity)
-            spawn_choice
+            self.spawn(ASTEROID_MIN_RADIUS, position, velocity)

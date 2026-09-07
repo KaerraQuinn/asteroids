@@ -1,7 +1,7 @@
 import pygame
 import sys
 import time
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_RADIUS, LINE_WIDTH
 from logger import log_state, log_event
 from asteroid import Asteroid
 from player import Player
@@ -9,6 +9,7 @@ from asteroidfield import AsteroidField
 from powerupfield import PowerUpField
 from shot import Shot
 from extralife import ExtraLife
+from shield import Shield
 
 def main():
     pygame.init()
@@ -22,6 +23,7 @@ def main():
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
     extralives = pygame.sprite.Group()
+    shields = pygame.sprite.Group()
     PowerUpField.containers = (updatable)
     AsteroidField.containers = (updatable)
     asteroid_field = AsteroidField()
@@ -31,15 +33,20 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
     Shot.containers = (shots, drawable, updatable)
     ExtraLife.containers = (updatable, drawable, extralives)
+    Shield.containers = (updatable, drawable, shields)
     Score = 0
     Lives = 3
     IMMUNITY_END = pygame.USEREVENT + 1
+    SHIELD_DOWN = pygame.USEREVENT + 2
     while True:
         log_state()
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == IMMUNITY_END:
                 player.immune = False
+            if event.type == SHIELD_DOWN:
+                player.immune = False
+                player.shield_bubble = False
             if event.type == pygame.QUIT:
                 return
             if keys[pygame.K_ESCAPE]:
@@ -75,8 +82,18 @@ def main():
             collision = extralife.collides_with(player)
             if collision:
                 log_event("extra_life")
+                print ("+1")
                 Lives += 1
                 extralife.kill()
+        for shield in shields:
+            collision = shield.collides_with(player)
+            if collision:
+                log_event("shield")
+                player.immune = True
+                print ("shielded")
+                shield.draw_bubble
+                pygame.time.set_timer(SHIELD_DOWN, 5000)
+                shield.kill()
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
