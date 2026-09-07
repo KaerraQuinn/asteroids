@@ -11,6 +11,7 @@ class Player(CircleShape):
         self.radius = PLAYER_RADIUS
         self.rotation = 0
         self.immune = False
+        self.frame_count = 0
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -21,7 +22,12 @@ class Player(CircleShape):
         return [a, b, c]
 
     def draw(self, screen):
-        pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
+        draw_player = True
+        if self.immune:
+            self.frame_count += 1
+            draw_player = self.frame_count % 4 == 0
+        if draw_player:
+            pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
 
     def rotate(self, dt: float):
         self.rotation += PLAYER_TURN_SPEED * dt
